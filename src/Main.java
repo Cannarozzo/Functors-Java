@@ -3,6 +3,7 @@ import java.util.function.Function;
 
 import functor.Functor;
 import functor.Const.Const;
+import functor.identity.Identity;
 import functor.maybe.Just;
 import functor.maybe.Maybe;
 import functor.maybe.Nothing;
@@ -20,6 +21,8 @@ public class Main {
 			}
 		}else if(funtor instanceof Const) {
 			return new Const(((Const) funtor).getValor());
+		}else if(funtor instanceof Identity) {
+			return new Identity(f.apply((A) ((Identity) funtor).getValor()));
 		}
 		return null;	
 		
@@ -37,6 +40,7 @@ public class Main {
 	}
 	
 	
+	@SuppressWarnings("unchecked")
 	public static void main(String[] args) {
 		
 		
@@ -44,6 +48,7 @@ public class Main {
 		Nothing n1 = new Nothing();
 		
 		Function<Integer,Integer> f = x -> x + 1;		
+		Function<String,Integer> tamanhoString = x -> x.length();
 		
 		Function bar = Function.identity();
 		
@@ -68,9 +73,17 @@ public class Main {
 	    System.out.println(fmapS(h,fmapS(g,fmapS(f,j))));	    
 	    System.out.println(fmapS(f,n1));
 	    
+	  
+	    
 	    // fmap com Const
 	    Const<Integer, String> cons = new Const<Integer, String>(3);
 	    System.out.println(fmapS(f, cons));
+	    System.out.println(cons.fmap(f));
+	    
+	    // fmap com Identity
+	    Identity<String> identity = new Identity<>("Fooo");
+	    System.out.println(fmapS(tamanhoString, identity));
+	    System.out.println(identity.fmap(tamanhoString));
  	    
 	}
 
