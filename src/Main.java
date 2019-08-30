@@ -2,12 +2,14 @@ import java.util.List;
 import java.util.function.Function;
 
 import functor.Functor;
+import functor.Const.Const;
 import functor.maybe.Just;
 import functor.maybe.Maybe;
 import functor.maybe.Nothing;
 
 public class Main {
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static <A,B> Functor<B> fmapS (Function<A,B> f, Functor<A> funtor){
 		if(funtor instanceof Maybe) {
 			if(funtor instanceof Just) {
@@ -16,6 +18,8 @@ public class Main {
 			}else {
 				return new Nothing();
 			}
+		}else if(funtor instanceof Const) {
+			return new Const(((Const) funtor).getValor());
 		}
 		return null;	
 		
@@ -58,11 +62,16 @@ public class Main {
 	    
 	    System.out.println(foo(0));
 	    */
+		// fmap com just
 	    System.out.println(fmapS(f,fmapS( f, j))); // fazer composicao com a funcao map (uso de flatmap/apply etec
-	    System.out.println(fmapS(g,fmapS(f,j)));
+	    System.out.println(fmapS(g,fmapS(f,j)));	    
+	    System.out.println(fmapS(h,fmapS(g,fmapS(f,j))));	    
+	    System.out.println(fmapS(f,n1));
 	    
-	    System.out.println(fmapS(h,fmapS(g,fmapS(f,j))));
-	    
+	    // fmap com Const
+	    Const<Integer, String> cons = new Const<Integer, String>(3);
+	    System.out.println(fmapS(f, cons));
+ 	    
 	}
 
 }
