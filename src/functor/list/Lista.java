@@ -2,6 +2,6 @@ package functor.list;
 
 import functor.Functor;
 
-public interface List<A> extends Functor{
-
+public interface Lista<A> extends Functor{
+	
 }

@@ -1,30 +1,37 @@
 package functor.list;
 
 import java.util.function.Function;
+import java.util.logging.ConsoleHandler;
 
 import functor.Functor;
 
-public class Cont<A> implements List {
+public class Cont<A> implements Lista {
 	private A valor;
-	private List<A> prox;
+	private Lista<A> prox;
 	
-	public Cont(A valor, List<A> prox) {
+	public Cont(A valor, Lista<A> prox) {
 		this.valor = valor;
 		this.prox = prox;
+	}
+	
+	public A getValor() {
+		return valor;
+	}
+
+	public Lista<A> getProx() {
+		return prox;
 	}
 
 	@Override
 	public Functor fmap(Function f) {
-		if(prox instanceof Final) {
-			return new Final();
-		}else {
-			return new Cont(f.apply(this.valor), prox ) ;
-		}
+			return new Cont((A)f.apply(this.valor),(Lista) prox.fmap(f));	
 	}
-
+	
+	
+	
 	@Override
 	public String toString() {
-		return "Cont (" + valor + ", Const =" + prox + ")";
+		return "Cont (" + this.valor + "," + prox + ")";
 	}
 	
 	

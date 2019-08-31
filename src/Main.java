@@ -6,6 +6,7 @@ import functor.Const.Const;
 import functor.identity.Identity;
 import functor.list.Cont;
 import functor.list.Final;
+import functor.list.Lista;
 import functor.maybe.Just;
 import functor.maybe.Maybe;
 import functor.maybe.Nothing;
@@ -88,9 +89,15 @@ public class Main {
 	    System.out.println(identity.fmap(tamanhoString));
  	    
 	    //fmap com lista
-	    Cont<Integer> lista = new Cont(2, new Cont<Integer>(3, new Final()));
+	    Cont<Integer> lista = 
+	    		new Cont(2, new Cont<Integer>(3, new Cont<Integer>(50, new Final())));
 	    
-	    System.out.println(lista.fmap(f));
+	    Lista l2 = (Cont) lista.fmap(f);
+	    
+	    System.out.println(l2);
+	    
+	    
+	    
 	    
 	    
 	    
