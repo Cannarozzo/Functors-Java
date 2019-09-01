@@ -1,4 +1,4 @@
-import java.util.List;
+
 import java.util.function.Function;
 
 import functor.Functor;
@@ -10,9 +10,10 @@ import functor.list.Lista;
 import functor.maybe.Just;
 import functor.maybe.Maybe;
 import functor.maybe.Nothing;
+import functor.writer.Writer;
 
 public class Main {
-	
+	// fmap estatico, porem, extremamente acoplado.
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static <A,B> Functor<B> fmapS (Function<A,B> f, Functor<A> funtor){
 		if(funtor instanceof Maybe) {
@@ -30,8 +31,7 @@ public class Main {
 		return null;	
 		
 	}
-
-	
+	// Exemplo de Integer -> Maybe
 	private static <Integer>Maybe foo (Integer valor){
 		switch((int)valor) {
 		case 0: 
@@ -40,12 +40,10 @@ public class Main {
 	    	return new Just(valor);
 		
 		}
-	}
-	
+	}	
 	
 	@SuppressWarnings("unchecked")
-	public static void main(String[] args) {
-		
+	public static void main(String[] args) {		
 		
 		Just<Integer> j = new Just<>(3);	
 		Nothing n1 = new Nothing();
@@ -53,31 +51,24 @@ public class Main {
 		Function<Integer,Integer> f = x -> x + 1;		
 		Function<String,Integer> tamanhoString = x -> x.length();
 		
-		Function bar = Function.identity();
-		
+		Function bar = Function.identity();		
 		
 		Function<Integer, Maybe> g = x -> x == 0 ? new Just(x) : new Nothing();
 		
 		Function<Maybe, Maybe> h = x ->  x instanceof Just ? new Just(x) : new Nothing();
 		
-	
-		
-		/*
-		
-	    System.out.println(j.fmap(f).fmap(f) );
-	    
-	    System.out.println(g.apply(0));
-	    
+		/*		
+	    System.out.println(j.fmap(f).fmap(f) );	    
+	    System.out.println(g.apply(0));	    
 	    System.out.println(foo(0));
 	    */
+		
 		// fmap com just
 	    System.out.println(fmapS(f,fmapS( f, j))); // fazer composicao com a funcao map (uso de flatmap/apply etec
 	    System.out.println(fmapS(g,fmapS(f,j)));	    
 	    System.out.println(fmapS(h,fmapS(g,fmapS(f,j))));	    
 	    System.out.println(fmapS(f,n1));
-	    
-	  
-	    
+	     
 	    // fmap com Const
 	    Const<Integer, String> cons = new Const<Integer, String>(3);
 	    System.out.println(fmapS(f, cons));
@@ -90,11 +81,13 @@ public class Main {
  	    
 	    //fmap com lista
 	    Cont<Integer> lista = 
-	    		new Cont(2, new Cont<Integer>(3, new Cont<Integer>(50, new Final())));
-	    
-	    Lista l2 = (Cont) lista.fmap(f);
-	    
+	    		new Cont(2, new Cont<Integer>(3, new Cont<Integer>(50, new Final())));	    
+	    Lista l2 = (Cont) lista.fmap(f);	    
 	    System.out.println(l2);
+	    
+	    Writer<Double,String> w1 = new Writer<>(3.0,"Log");
+	    Function<Double, Double> quadrado = x -> Math.pow(x, 2);	    
+	    System.out.println(w1.fmap(quadrado).fmap( x -> (double)Math.sqrt((double)x)));
 	    
 	    
 	    
