@@ -3,6 +3,7 @@ import java.util.function.Function;
 
 import functor.Functor;
 import functor.Const.Const;
+import functor.Reader.Reader;
 import functor.identity.Identity;
 import functor.list.Cont;
 import functor.list.Final;
@@ -13,70 +14,30 @@ import functor.maybe.Nothing;
 import functor.writer.Writer;
 
 public class Main {
-	// fmap estatico, porem, extremamente acoplado.
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static <A,B> Functor<B> fmapS (Function<A,B> f, Functor<A> funtor){
-		if(funtor instanceof Maybe) {
-			if(funtor instanceof Just) {
-				A v = (A) ((Just) funtor).getJust();				
-				return new Just(f.apply(v));
-			}else {
-				return new Nothing();
-			}
-		}else if(funtor instanceof Const) {
-			return new Const(((Const) funtor).getValor());
-		}else if(funtor instanceof Identity) {
-			return new Identity(f.apply((A) ((Identity) funtor).getValor()));
-		}
-		return null;	
-		
-	}
-	// Exemplo de Integer -> Maybe
-	private static <Integer>Maybe foo (Integer valor){
-		switch((int)valor) {
-		case 0: 
-			return new Nothing();
-	    default: 
-	    	return new Just(valor);
-		
-		}
-	}	
 	
 	@SuppressWarnings("unchecked")
-	public static void main(String[] args) {		
+	public static void main(String[] args) {			
 		
-		Just<Integer> j = new Just<>(3);	
-		Nothing n1 = new Nothing();
-		
-		Function<Integer,Integer> f = x -> x + 1;		
-		Function<String,Integer> tamanhoString = x -> x.length();
-		
-		Function bar = Function.identity();		
-		
-		Function<Integer, Maybe> g = x -> x == 0 ? new Just(x) : new Nothing();
-		
+		Function<Integer,Integer> f = x -> x + 1;	
+		Function<Integer, Maybe> g = x -> x == 0 ? new Just(x) : new Nothing();		
 		Function<Maybe, Maybe> h = x ->  x instanceof Just ? new Just(x) : new Nothing();
-		
-		/*		
-	    System.out.println(j.fmap(f).fmap(f) );	    
-	    System.out.println(g.apply(0));	    
-	    System.out.println(foo(0));
-	    */
+		Function<String,Integer> tamanhoString = x -> x.length();	
 		
 		// fmap com just
-	    System.out.println(fmapS(f,fmapS( f, j))); // fazer composicao com a funcao map (uso de flatmap/apply etec
-	    System.out.println(fmapS(g,fmapS(f,j)));	    
-	    System.out.println(fmapS(h,fmapS(g,fmapS(f,j))));	    
-	    System.out.println(fmapS(f,n1));
+		Just<Integer> just = new Just<>(3);	
+		Nothing nothing = new Nothing();
+		System.out.println(just.fmap(f).fmap(f));
+		System.out.println(just.fmap(f).fmap(g));// M ( M A), instancia de monada necessaria, para composicao de funtores...		
+		System.out.println(new Just(0).fmap(g).fmap(h));// M ( M (..) 
+		System.out.println(nothing.fmap(f));
 	     
 	    // fmap com Const
 	    Const<Integer, String> cons = new Const<Integer, String>(3);
-	    System.out.println(fmapS(f, cons));
 	    System.out.println(cons.fmap(f));
 	    
 	    // fmap com Identity
 	    Identity<String> identity = new Identity<>("Fooo");
-	    System.out.println(fmapS(tamanhoString, identity));
+
 	    System.out.println(identity.fmap(tamanhoString));
  	    
 	    //fmap com lista
@@ -85,12 +46,15 @@ public class Main {
 	    Lista l2 = (Cont) lista.fmap(f);	    
 	    System.out.println(l2);
 	    
+	    //fmap com Writer
 	    Writer<Double,String> w1 = new Writer<>(3.0,"Log");
 	    Function<Double, Double> quadrado = x -> Math.pow(x, 2);	    
 	    System.out.println(w1.fmap(quadrado).fmap( x -> (double)Math.sqrt((double)x)));
 	    
-	    
-	    
+	    //fmap com Reader
+	    Function<String, Integer> id = x -> Integer.parseInt(x);	    
+	    Reader<String,Integer> r1 = new Reader<String, Integer>(id);
+	    System.out.println(r1.fmap( valor -> (int)valor == 0 ? true : false));
 	    
 	    
 	    
